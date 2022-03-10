@@ -22,19 +22,8 @@ class User:
         #     {"id": "1","first_name":"Cynthia", "last_name": "Apellido", "email":"c@cd.com", "created_at": "2002-02", "updated_at"}
         # ]
         users = []
-        # for u in results:
-        #     users.append(cls(u))
-        # return users
         for u in results:
             usr = cls(u)
-            
-            # data = {
-            #     "id": 2
-            # }
-
-            # classr = Classroom.muestra_salon(data)
-            # usr.classroom = classr
-
             users.append(usr)
         return users
     
