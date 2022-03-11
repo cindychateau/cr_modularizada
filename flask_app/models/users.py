@@ -2,6 +2,9 @@ from flask_app.config.mysqlconnection import connectToMySQL
 from .classrooms import Classroom
 from .hobbies import Hobbie
 from flask import flash
+import re #Importa el uso de las Expresiones regulares
+
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 class User:
     def __init__(self, data):
@@ -17,6 +20,8 @@ class User:
         self.classroom = classroom
 
         self.hobbies = []
+
+        self.password = data['password']
 
     @classmethod
     def muestra_usuarios(cls):
@@ -34,7 +39,7 @@ class User:
     @classmethod
     def guardar(cls, formulario):
         #data = {"first_name": "C", "last_name": "X", "email": "c@cd.com"}
-        query = "INSERT INTO users (first_name, last_name, email, classroom_id) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(classroom_id)s)"
+        query = "INSERT INTO users (first_name, last_name, email, classroom_id, password) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(classroom_id)s, %(password)s)"
         result = connectToMySQL('esquema_usuarios').query_db(query, formulario)
         return result
     
@@ -62,3 +67,18 @@ class User:
             
 
         return user
+    #Funcion encargada de validar la información de mi usuario
+    @staticmethod
+    def valida_user(user):
+        #Inicio un validador
+        es_valido = True
+        if len(user['first_name']) < 3:
+            flash("El nombre del usuario debe tener al menos 3 caracteres")
+            es_valido = False
+        if len(user['last_name']) < 3:
+            flash("El apellido del usuario debe ser de al menos 3 caracteres")
+            es_valido = False
+        if not EMAIL_REGEX.match(user['email']):
+            flash("El correo electrónico es inválido")
+            es_valido = False
+        return es_valido

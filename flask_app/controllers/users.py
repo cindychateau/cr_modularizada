@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 
 from flask_app import app
 from flask_app.models.users import User
 from flask_app.models.classrooms import Classroom
+
+from flask_bcrypt import Bcrypt
+bcrypt = Bcrypt(app)
 
 @app.route('/')
 def index():
@@ -17,7 +20,21 @@ def new():
 @app.route('/create', methods=['POST'])
 def create():
     print(request.form)
-    User.guardar(request.form)
+
+    pwd = bcrypt.generate_password_hash(request.form['password'])
+
+    formulario = {
+        "first_name" : request.form['first_name'],
+        "last_name" : request.form['last_name'],
+        "email" : request.form['email'],
+        "classroom_id" : request.form['classroom_id'],
+        "password" : pwd,
+    }
+
+    if not User.valida_user(formulario):
+        return redirect('/new')
+    
+    User.guardar(formulario)
     return redirect('/')
 
 @app.route('/show/<int:id>')
