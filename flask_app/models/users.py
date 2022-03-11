@@ -1,5 +1,7 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from .classrooms import Classroom
+from .hobbies import Hobbie
+from flask import flash
 
 class User:
     def __init__(self, data):
@@ -13,6 +15,8 @@ class User:
 
         classroom = Classroom.muestra_salon_2(data['classroom_id'])
         self.classroom = classroom
+
+        self.hobbies = []
 
     @classmethod
     def muestra_usuarios(cls):
@@ -37,11 +41,24 @@ class User:
     @classmethod
     def mostrar(cls, formulario):
         #formulario = {"id": "1"}
-        query = "SELECT * FROM users WHERE id = %(id)s"
+        query = "SELECT * FROM users LEFT JOIN users_has_hobbies ON users.id = user_id LEFT JOIN hobbies ON hobbies.id = hobbie_id WHERE users.id = %(id)s"
         result = connectToMySQL('esquema_usuarios').query_db(query, formulario)
         # [
         #     {'3','Juana','De Arco','juana@codingdojo.com','2022-03-09 14:50:58','2022-03-09 14:50:58'}
         # ]
         usr = result[0]
         user = cls(usr)
+        print(result)
+        for h in result:
+            hobbie_data = {
+                "id": h['hobbies.id'],
+                "name": h['name'],
+                "created_at": h['hobbies.created_at'],
+                "updated_at": h['hobbies.updated_at']
+            }
+
+            hobbie = Hobbie(hobbie_data)
+            user.hobbies.append(hobbie)
+            
+
         return user

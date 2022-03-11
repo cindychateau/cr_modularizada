@@ -23,6 +23,14 @@
             <div class="form-group">
                 <label for="classroom_id">Clase/Salón</label>: {{user.classroom.name}}
             </div>
+            <div class="form-group">
+                <label>Hobbies:</label>
+                <ul>
+                    {% for hobbie in user.hobbies %}
+                    <li>{{hobbie.name}} - {{hobbie.created_at}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
             <a href="/" class="btn btn-primary">Regresar</a>
         </form>
     </div>
